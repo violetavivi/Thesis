@@ -1,0 +1,184 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass{harvard-thesis}
+\let\oldcentering\centering
+
+\usepackage{breqn}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{nicematrix}
+\usepackage{array,multirow}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{alphabeta}
+\usepackage{lipsum}  
+\usepackage{tabularx}
+\usepackage{pdfpages}
+\usepackage{pdflscape}
+\usepackage{epigraph}
+\usepackage{graphicx}
+\usepackage[bb=boondox]{mathalfa}
+\usepackage[symbols,automake=true,nogroupskip]{glossaries-extra} 
+% AAD ALL THIS THE LAST TIME WE RAN IT ,section=chapter*
+%,numberedsection=false,nonumberlist,,toc=false
+\usepackage{fontspec}
+\usepackage{comment}
+%\usepackage[section]{placeins}
+
+\newcommand\invisiblesection[1]{%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}%
+  \sectionmark{#1}}
+% headers
+
+\usepackage[doi=false,hyperref,backend=biber,backref,backrefstyle=none,isbn=false,eprint=false,maxnames=9,style=nature,url=false]{biblatex}
+\usepackage{scrhack}
+\newbibmacro{string+doi+url+isbn}[1]{%
+  \iffieldundef{doi}{%
+    \iffieldundef{url}{%
+      \iffieldundef{isbn}{%
+        \iffieldundef{issn}{%
+          #1%
+        }{%
+          \href{http://books.google.com/books?vid=ISSN\thefield{issn}}{#1}%
+        }%
+      }{%
+        \href{http://books.google.com/books?vid=ISBN\thefield{isbn}}{#1}%
+      }%
+    }{%
+      \href{\thefield{url}}{#1}%
+    }%
+  }{%
+    \href{http://dx.doi.org/\thefield{doi}}{#1}%
+  }%
+} % Adds hyperrex to title. https://tex.stackexchange.com/questions/48400/biblatex-make-title-hyperlink-to-dois-url-or-isbn
+
+\newbibmacro{string+doi}[1]{%
+  \iffieldundef{doi}{\iffieldundef{url}{#1}{\href{\thefield{url}}{#1}}}{\href{http://dx.doi.org/\thefield{doi}}{#1}}}	
+\DeclareFieldFormat[article]{title}{\usebibmacro{string+doi}{#1}}    
+    
+\AtEveryBibitem{%
+  \clearfield{issn} % Remove issn
+  \clearfield{doi} % Remove doi
+  %\clearfield{pages} % Remove pages
+  \clearfield{month}
+  \clearfield{abstract}
+}
+\addbibresource{references.bib}
+
+
+\DeclareCaptionJustification{justified}{\justifying}
+\captionsetup{justification=justified}
+\makeglossaries
+\loadglsentries{Glossary}
+
+\geometry{
+    paper=b5paper,
+    inner=20mm,         % Inner margin
+    outer=30mm,         % Outer margin
+    bindingoffset=10mm, % Binding offset
+    top=25mm,           % Top margin
+    bottom=28mm,        % Bottom margin
+    %showframe,         % show how the type block is set on the page
+}
+
+
+\newcommand{\mean}[1]{\left\langle #1\right\rangle}
+\newcommand*{\img}[1]{%
+    \raisebox{-.3\baselineskip}{%
+        \includegraphics[
+        height=\baselineskip,
+        width=\baselineskip,
+        keepaspectratio,
+        ]{#1}%
+    }%
+}
+\renewcommand{\arraystretch}{1.2} %<- modify value to suit your needs
+\begin{document}
+
+%---------------------------------------------------------------------------
+%	FRONT MATTER
+%--------------------------------------------------------------------------
+\includepdf[pages =-,offset=0 0]{frontmatter/official_cover.pdf}
+\pagenumbering{roman}
+\abstractpage
+\acknowledgments
+%\printglossary[type=symbols,style=long,title={List of Symbols and Abreviations}]
+\publicationspage
+\dedicationpage
+
+%---------------------------------------------------------------------------
+%	TABLE OF CONTENTS AND LISTS
+%---------------------------------------------------------------------------
+\tableofcontents
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\newpage
+\thispagestyle{empty} % first page of TOC without numbering
+%\addtocontents{toc}{\protect\thispagestyle{empty}} % second page of TOC without numbering
+    \newpage 
+    \ % The empty page
+    \newpage
+    
+%%%%%%%%%% lists
+\addcontentsline{toc}{section}{List of Tables}
+\listoftables
+\cleardoublepage
+\addcontentsline{toc}{section}{\listfigurename}
+
+\listoffigures
+\newpage
+\thispagestyle{empty}
+    \newpage 
+    \ % The empty page
+    \newpage
+\pagenumbering{arabic}
+
+%---------------------------------------------------------------------------
+%	CONTENT CHAPTERS
+%---------------------------------------------------------------------------
+\include{chapters/chpintro.tex}
+\include{chapters/chpmethods.tex}
+
+\part{Ecological promenade}
+\include{chapters/chp1.tex}
+\include{chapters/chp2.tex}
+
+\part{Social systems feat.\ ecology}
+\include{chapters/chp3.tex}
+\include{chapters/chp4.tex}
+
+\include{chapters/chpconclu.tex}
+%---------------------------------------------------------------------------
+%	APPENDICES
+%---------------------------------------------------------------------------
+\singlespacing
+% the back matter
+\clearpage
+\phantomsection
+%activate only when we finish.
+\begin{appendices}
+
+\include{chapters/appenNodeMetrics.tex}
+\include{chapters/appenMF}
+\include{chapters/appenAreasSimplex.tex} 
+\include{chapters/appenInferingInteractions.tex}
+\include{chapters/appenDT.tex}
+\include{chapters/appenSupPredictors}
+\include{chapters/appenDataCode}
+\include{chapters/appenPatternsDetails}
+
+\end{appendices}
+
+%---------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%---------------------------------------------------------------------------
+\addcontentsline{toc}{chapter}{References}
+\printbibliography
+
+
+
+\end{document}
