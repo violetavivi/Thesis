@@ -1,0 +1,481 @@
+\chapter{\label{appen:MF}Analytical formulation for structured interactions}
+
+Along with a numerical implementation of the dynamics described in Chapter~\ref{chp1:1}, it is
+also possible to provide a mathematical description of the
+model, which we set up in this Appendix. In Section
+\ref{sec:moments} we establish the basic equations for the
+moments of the population variables. Section~\ref{sec:mf}
+develops a standard mean-field approximation for statistically
+homogeneous systems. We stress that it is not able to reproduce
+the main numerical findings for our model, but gives a baseline
+to interpret the results. Section~\ref{sec:localmf} extends the
+mean-field approximation to allow for spatial inhomogeneity in
+the species distribution. The results still do not match with
+the numerical observations, but give some hints on the reduced
+stability of homogeneous oscillations when the interaction
+range is small.
+
+\subsection{Moment equations}
+\label{sec:moments}
+
+An analytical description of the stochastic dynamics defined in
+the main text can be given (after a trivial replacement of the
+discrete-time dynamics by a continuous-time one) by the master
+equation for the time-dependent probability of the system
+state. It allows us to derive equations for the expected
+relative abundance of each species at a given node as well as
+for the two-node correlations.
+
+The model state can be specified by giving $\{Z_\nu\}$, where
+$Z_\nu=1,2,...,g$ specifies the species that occupies node
+$\nu\in\Sigma$, with $\Sigma$ being the set of nodes of the
+network. However, we find more convenient to parameterize the
+model as follows. Let $n_{i,\nu}\in \{0,1\}$ be the number of
+individuals of species $i\in\{1,\dots,g\}$ at node $\nu\in
+\Sigma$, i.e. $n_{i,\nu}=1$ for one and only one $i$,
+identifying the species present at $\nu$, and $0$ for the other
+values of $i$ (absent species). The state of the system can be
+characterized by the set of vectors $S=\{S_\nu\}_{\nu=1}^N$,
+with $S_\nu=\{n_{1,\nu},\dots,n_{g,\nu}\}$. This state evolves
+as follows: (i) with a rate $r$, a randomly chosen individual
+(say, located at $\nu$) dies, then (ii) two neighbors of the
+dead individual (thus pertaining to the set $P_\nu$ of
+neighbors of $\nu$) are chosen at random and compete to
+generate the offspring: a winner species is selected according
+to the probabilities in the dominance matrix $H$. And (iii)
+this offspring is immediately located at the vacant node.
+Following standard procedures (for example see
+ \cite{khlohe17,klkh20}) the master equation for the probability
+$p(S,t)$ of finding the system in a state $S$ at time $t$ can
+be written as
+\begin{align}
+  \label{eq:me}
+  \frac{\partial}{\partial t}p(S,t)=
+  \sum_{\nu=1}^N\sum_{i,j}\left( E^+_{i,\nu}E^-_{j,\nu}-1\right)\pi_\nu(i\to j)p(S,t),
+\end{align}
+where the operators $E^\pm$ act on an arbitrary state function
+$f(S)$ as
+\begin{eqnarray}
+  \nonumber
+E^\pm_{i,\nu}f(S)=f&\Big(&\{n_{1,1},\dots,n_{g,1}\} ,\dots, \\   \nonumber
+&&\{n_{1,\nu},  \dots,n_{i,\nu}\pm 1,\dots,n_{g,\nu}\},\dots,\\
+&&  \{n_{1,N},\dots,n_{g,N}\} \ \ \Big).
+\end{eqnarray}
+$\pi_{\nu}(i\to j)$ is the rate at which an individual of
+species $i$ is replaced by one of species $j$ at site $\nu$,
+given by
+\begin{equation}
+  \pi_{\nu}(i\to j)=r\frac{n_{i,\nu}}{N}\frac{2}{k_\nu(k_\nu-1)}
+  \sum_{\stackrel{\lambda,\mu\in P_\nu}{\mu\neq \lambda}}\sum_{k}n_{j,\lambda}n_{k,\mu}H_{jk},
+\end{equation}
+where $k_\nu$ is the degree of node $\nu$, i.e. the number of
+nodes in $P_\nu$. 
+
+
+From the master equation we can derive equations for the
+moments of the distribution, which can be easily measured from
+the numerical simulations. The simplest nontrivial moment is
+the expected number of individuals of species $i$ at node
+$\nu$, $\mean{n_{i,\nu}}$. Its equation is readily obtained
+from the master equation after multiplying it by $n_{i,\nu}$
+and summing over all possible values of $S$:
+\begin{eqnarray}
+  \label{eq:ni}
+  \frac{d}{ds} \mean{n_{i,\nu}} =&& \frac{1}{k_\nu(k_\nu-1)}
+  \sum_{j} \sum_{\stackrel{\lambda,\mu\in P_\nu}{\mu\neq \lambda}}
+  H_{ij} \mean{n_{i,\lambda}n_{j,\mu}}\nonumber \\
+  && - \frac12 \mean{n_{i,\nu}} ,
+\end{eqnarray}
+where we have introduced a new time scale $s\equiv
+\frac{2r}{N}t$.
+
+From this equation we can write the dynamics for the expected
+value of the macroscopic variable $x_i(s) \equiv N^{-1}\sum_\nu
+n_{i,\nu}$ as 
+\begin{equation}
+\label{eq:xintermsofP}
+  \frac{d}{ds} \mean{x_i(s)} =
+  \sum_{j} H_{ij} P_{ij}(s) - \frac12 \mean{x_i(s)} ,
+\end{equation}
+where we have introduced the symmetric matrix
+\begin{equation}
+\label{eq:Ps}
+  P_{ij}(s) = \frac{1}{N} \sum_\nu \frac{1}{k_\nu (k_\nu -1)}
+  \sum_{\stackrel{\lambda,\mu\in P_\nu}{\mu\neq \lambda}} \mean{n_{i,\lambda}n_{j,\mu}} \ .
+\end{equation}
+This matrix can be interpreted as the probability of sampling
+at time $s$ a pair of individuals of species $i$ and $j$ when
+deciding the replacement of a dead individual somewhere in the
+system. It satisfies  $\sum_{ij} P_{ij}(s) =1$
+and, in a homogeneous network ($k_\nu=k$, $\forall \nu$),
+$\sum_{j=1}^g P_{ij}(s)=\mean{x_i(s)}$.
+
+
+As for the second-order moments, both for $\mu \in P_{\nu}$ and
+for $\mu\notin P_\nu$, their equations read
+\begin{eqnarray}
+\nonumber
+  \frac{d}{ds} \mean{n_{i,\nu}n_{j,\mu}} =&&\frac{1}{k_\nu(k_\nu-1)}
+  \sum_{l}\sum_{\stackrel{\delta,\lambda\in P_\nu}{\delta\ne \lambda}}H_{il}\mean{n_{i,\lambda}n_{l,\delta}n_{j,\mu}} \\
+  && + \frac{1}{k_\mu(k_\mu-1)}
+  \sum_{l} \sum_{\stackrel{\delta,\lambda\in P_\nu}{\delta\ne \lambda}}H_{jl}\mean{n_{j,\lambda}n_{l,\delta}n_{i,\nu}} \nonumber \\ &&-\mean{n_{i,\nu}n_{j,\mu}}.
+\label{eq:ninj}
+\end{eqnarray}
+
+In general, it can be seen that the moment equations form a
+hierarchy, namely that the equation for a moment of order $o$
+depends on the moments of order $o+1$. Hence, they cannot be
+solved in closed form, except if introducing some
+approximation.
+
+\subsection{Homogeneous mean-field approximation}
+\label{sec:mf}
+
+The simplest of such approximations is the mean-field approach.
+It is conveniently done in the simplified case in which the
+network is spatially homogeneous, i.e. all the nodes have the
+same degree: $k_\nu=k$, $\forall \nu$. In this situation, we
+can search for statistically homogeneous solutions:
+$\mean{n_{i,\nu}(s)}=\rho_i(s)$, $\forall \nu$. We can relate
+these time-dependent moments $\rho_i(s)$ to the macroscopic
+variables $x_i(s) \equiv N^{-1}\sum_\nu n_{i,\nu}(s)$ (note
+that $\sum_{i=1}^g x_i(s)=1$). Indeed we have
+$\mean{x_i}=N^{-1}\sum_\nu \rho_i=\rho_i$, or
+$\mean{x_i}=\mean{n_{i,\nu}}$.
+
+The mean-field approximation, which is exact in the case of
+all-to-all interactions in an infinite system, and expected to
+be accurate both for large enough interaction range (mean
+degree) and for unstructured interactions, consists in
+neglecting fluctuations and correlations:
+\begin{eqnarray}
+& \mean{n_{i,\nu}}=\mean{x_i}  \simeq x_i\ ,  & \forall \nu\in \Sigma, \\
+& \mean{n_{i,\nu} n_{j,\mu}}   \simeq \mean{n_{i,\nu}} \mean{n_{j,\mu}} \simeq x_ix_j \ , &  \forall \nu\ne \mu \in \Sigma.
+\end{eqnarray}
+We have also $P_{ij}\approx x_i x_j$. Introduction of these
+expressions into Eq. (\ref{eq:ni}) leads to a closed evolution
+equation for $x_i$:
+\begin{equation}
+  \label{eq:meanf}
+  \frac{d}{ds} x_i = \left(\sum_{l}H_{ij}x_j-\frac12\right)x_i \ .
+\end{equation}
+
+This mean-field equation has been studied before (e.g.
+ \cite{Grilli2017Higher-orderModels}). We summarize here the
+main results:
+
+First, the dynamics (\ref{eq:meanf}) maintains in time the
+property $\sum_i x_i =1$, if the initial condition satisfies
+it. This can be seen by defining $X\equiv \sum_i x_i$,
+calculating $dX/ds$, using that $H_{ij}=(H_{ij}+H_{ij})/2 =
+(1-H_{ji}+H_{ij})/2$, and noticing that $\sum_{ij}
+(H_{ij}-H_{ji})x_i x_j =0$ and $\sum_{ij} x_i x_j =X^2$. Thus
+the sum of relative abundances satisfies
+\begin{equation}
+\label{eq:sumdynamics}
+\frac{dX}{ds} = \frac12 (X^2 - X) \ ,
+\end{equation}
+which maintains $X(t)=1$, $\forall t$ if
+$X(0)=1$.
+
+Second, Eq. (\ref{eq:meanf}) has several equilibria or fixed
+points. Many of them are of the `absorbing' or `boundary' type,
+i.e. steady solutions of (\ref{eq:meanf}) in which $x_i=0$ for
+some $i$, so that the corresponding species are extinct. In
+addition, if $g$ is odd, there is generically
+ \cite{Grilli2017Higher-orderModels} an \textit{interior}
+equilibrium, $x_i(t)=x_i^*$, $\forall t$, in which all species
+coexist with non-vanishing relative abundances $x_i^*$. At this
+fixed point the relative abundances are given by
+\begin{equation}
+  \label{eq:sts}
+  \sum_{j=1}^g H_{ij} x_j^* =\frac12 \ \ \Rightarrow \ \
+  x_i^*=\frac12 \sum_j (H^{-1})_{ij},
+\end{equation}
+where $H^{-1}$ is the inverse of the dominance matrix, which
+always exists when it describes an intransitive loop. The
+properties of the boundary fixed points can be analyzed by
+recognizing that they can be considered interior equilibria in
+a system with a smaller number $g$ of species.
+
+Third, the dynamics from arbitrary initial conditions in which
+all $x_i$ are non-vanishing (and for generic $H$) leads to a
+transient in which some of the species may become extinct. The
+remaining ones, an odd number, cycle neutrally around the
+interior fixed point (\ref{eq:sts}) in which the rows and
+columns corresponding to the extinct species have been removed
+from $H$ \cite{Grilli2017Higher-orderModels}. The stability of
+this interior equilibrium is always neutral: relative
+abundances of surviving species describe periodic closed orbits
+around it, with an amplitude and period that is determined by
+the initial condition and without being attracted nor repelled
+by the fixed point. This can be seen
+ \cite{Grilli2017Higher-orderModels} by noticing that the
+quantity
+\begin{equation}
+V(x_1,...,x_g) = - \sum_{i=1}^g x_i^* \log \frac{x_i}{x_i^*}
+\end{equation}
+is a constant of motion, and thus it foliates the
+$(g-1)$-simplex on which the dynamics occurs into invariant
+hypersurfaces that turn out to contain concentric closed orbits
+around the interior equilibrium.
+
+The neutral character of the oscillations is not realistic from
+the biological point of view, and structurally unstable from
+the mathematical point of view. It is a consequence of the mean
+field approximation, and we expect such neutral cycling to be
+broken under corrections to mean-field, or under the full
+dynamics with finite range of interaction. This is indeed what
+is seen in our numerical simulations for the full model with
+three species: either the fixed point becomes attracting, or
+the neutral cycles are replaced by a single attracting limit
+cycle, with amplitude and period independent of the initial
+conditions.
+
+In addition to its non-robust prediction of neutral cycling of
+the species, the mean-field approximation is not able to
+explain our main numerical finding: the fixed point
+becomes stable for short-range interactions. From the
+observations of Section~\ref{chp1:2.3} and Figure
+\ref{chp1:fig:5} it is likely that the stabilization of the
+fixed point arises from the fact that the relative abundance
+$x_i$ are macroscopic quantities that become averaged and
+non-fluctuating when the microscopic structure contains many
+different domains, as in Figure \ref{chp1:fig:5}a. Thus,
+it is pertinent trying to extend the mean-field formalism to
+describe the microscopic spatially-dependent configurations, as
+done in the following section.
+
+
+\subsection{Local mean-field and spatial stability}
+\label{sec:localmf}
+
+In this section we consider the species locations to be at the
+nodes of a two-dimensional square lattice. Then the node index
+$\nu$ can be considered to be a discrete two-dimensional vector
+$\nu$. For regular networks such as this one, the mean-field
+approximation can be made local in space. This involves
+removing correlations as
+$\mean{n_{i,\mathbf{\nu}}n_{i,\nu}}\simeq\mean{n_{i,\nu}}\mean{n_{i,\nu}}$
+while keeping the dependence of the mean quantities on the node
+location.
+
+Under this approximation, Eq.~\eqref{eq:ni} can be written as:
+
+\begin{dmath}
+ \frac{d}{ds}\rho_i(\nu,s) =  \frac{1}{k(k-1)} \sum_{j} H_{ij}  \left[
+  \left(\sum_{\lambda\in P_\nu}\rho_i(\lambda,s)\right) \left(\sum_{\mu\in P_\nu}\rho_j(\mu,s)\right)
+  - \sum_{\lambda \in P_\nu} \rho_i(\lambda,s) \rho_j(\lambda,s)
+  \right]   -\frac{1}{2}\rho_i(\nu,s).
+\label{eq:localMF}
+\end{dmath}
+
+We have used the notation $\mean{n_{i,\nu}} \equiv
+\rho_i(\nu,s)$. Note that this equation reduces to Eq.
+(\ref{eq:meanf}) when $\rho_i$ is homogeneous:
+$\rho_i(\nu,s)=x_i(s)$, $\forall \nu$.
+
+This new formulation allows us to assess the stability of
+particular solutions against spatially-dependent perturbations.
+For example we can focus on the stability of an homogeneous but
+time-dependent solution $\rho_i(\nu,s)=x_i(s)$ which verifies
+Eq.~\eqref{eq:meanf}. To do so, we seek a solution to
+Eq.~\eqref{eq:localMF} of the form
+\begin{equation}
+  \rho_i(\nu,s)=x_i(s)+\delta_i(\nu,s),
+\end{equation}
+and linearize to first order in $\delta$. With this,
+Eq.~\eqref{eq:localMF} becomes
+
+
+\begin{dmath}
+\frac{d\delta_i(\nu,s)}{ds} = \sum_j \frac{H_{ij}}{k}
+\left[ x_j(s) \sum_{\lambda\in P_\nu} \delta_i(\lambda,s)
++  x_i(s) \sum_{\lambda\in P_\nu} \delta_j(\lambda,s)\right]  -\frac12 \delta_i(\nu,s)  \ .
+\label{eq:localMFlin}
+\end{dmath}
+
+We introduce the Fourier transform of the perturbation:
+$\hat\delta_i(q,s) = \sum_\nu e^{i q\cdot\nu}
+\delta_i(\nu,s)$, in terms of which Eq.
+(\ref{eq:localMFlin}) reads:
+\begin{eqnarray}
+  \frac{d\hat\delta_i(q,s)}{ds} &=& \left[ -1 + 2 F(q) \sum_j H_{ij} x_j(s) \right]\hat\delta_i(q,s) \nonumber \\
+                                &+& F(q) x_i(s) \sum_j H_{ij} \hat\delta_j(q,s) \ .
+\label{eq:stability}
+\end{eqnarray}
+We have introduced the quantity
+\begin{equation}
+  \label{eq:fourarA}
+  F(q)\equiv \frac{1}{k}\sum_{\lambda \in P_{0}} e^{iq \cdot \lambda} \ ,
+\end{equation}
+which satisfies $F(q = 0)=1$, $|F(q)|\le 1$, and
+$F(q)\to 0$ as $|q|\to \infty$. Note that this quantity
+contains information on the interaction range through the
+dependence on $P_{{0}}$ (i.e. through the set of neighbors of the origin). 
+%{\VC DEFINE $P_{\bm{0}$}.
+
+The simplest case to analyze is the stability of the interior
+equilibrium point, i.e. $x_i(s)=x_i^*$, $\forall s$ as given by
+Eq.~\eqref{eq:sts}. In this case Eq. \eqref{eq:stability} is a
+linear system with constant coefficients, hence the stability
+depends on the eigenvalues of the matrix of coefficients
+$M_{ij}=F(q)x_i^* H_{ij} + [F(q)-1]\delta_{ij}/2$.  In
+fact, because of Eq. (\ref{eq:sumdynamics}), there is always an
+unstable eigenvalue $1/2$ for perturbations that bring the
+dynamics out of the simplex. Thus, it is convenient to restrict
+the dynamics to the simplex by using $\sum_{j=1}^g \delta_j=0$,
+and then the matrix of the coefficients of Eq.
+(\ref{eq:stability}) restricted to the first $g-1$ dimensions
+is $M_{ij}=F(q)x_i^* (H_{ij}-H_{ig}) +
+[F(q)-1]\delta_{ij}/2$, $i,j=1,...,g-1$.
+
+For example, for $g=3$, the two eigenvalues of $M$ restricted
+to the simplex can be explicitly calculated and read
+\begin{equation}
+  \lambda_\pm=-\frac{1-F}{2}
+  \pm i \frac{F}{2}\sqrt{\frac{(2H_{12}-1)(2H_{13}-1)(2H_{23}-1)}{1 - 2(H_{12}-H_{13}+H_{23})}} \ .
+\end{equation}
+The argument of the square root is always positive when $H$
+presents intransitive dominance cycles. Hence
+\begin{equation}
+  \textrm{Re}[\lambda_\pm]=-\frac{1-F(\mathbf q)}{2}\le 0
+\end{equation}
+and the equality holds if and only if $\mathbf q=\mathbf 0$.
+This means that, within the mean-field approximation, the
+steady and homogeneous solution $\rho_i(\nu,s)=x_i^*$ is 
+linearly stable against small spatial perturbations, except for
+homogeneous perturbations, in which stability is marginal (a
+fact that we already knew from the more general nonlinear
+arguments in Section~\ref{sec:mf}). Thus, the local mean-field
+dynamics of Eq. (\ref{eq:localMF}) leads, for inhomogeneous
+initial conditions close to the interior fixed point, to a
+homogenization of the configuration, which then proceeds to
+cycle neutrally around the fixed point. This is confirmed by
+direct numerical simulation of Eq. (\ref{eq:localMF}). These
+results hold for any value of the interaction range, contained
+in $F(q)$. Thus, this local mean-field theory is not able to
+explain the results from our stochastic model with structured
+interactions. Namely, a transition from persistent inhomogeneous
+configurations at short interaction range, which produce a
+fully attracting fixed point for the macroscopic variable
+$x_i(s)=\sum_\nu \rho(\nu,s)$, to a situation with
+oscillatory dynamics that produces a repelling fixed point and
+limit-cycle oscillations for $x_i(s)$ at large interaction
+range.
+
+Nevertheless, we can still use the local mean-field to gain
+further insight into the dynamics, for example by analyzing the
+stability with respect to inhomogeneous perturbations of a
+homogeneous periodic solution $x_i(s)$ of Eq. (\ref{eq:meanf}).
+In this case the stability equation (\ref{eq:stability}) is a
+linear equation with periodic coefficients, which can be
+analyzed with Floquet theory. The solutions can be written as a
+linear combination of the functions \cite{gl94}
+\begin{equation}
+  f_i(s)e^{p_i s},\qquad i=1,\dots,g-1,
+\end{equation}
+where $f_i(s)$ are periodic (and hence bounded) functions of
+time, with the same period $T$ as the functions $x_i(s)$, and
+$p_i$ are the Floquet exponents given in terms of the
+eigenvalues $\Lambda_i$ of the fundamental matrix $\Phi(s)$ of
+system \eqref{eq:stability}, satisfying $\Phi(0)=I$, as
+\begin{equation}
+  \Lambda_i=e^{p_i T}.
+\end{equation}
+When all $p_i$ are negative, the perturbations decay and the
+homogeneous solution $x_i(s)$ is recovered as time advances. We
+have numerically evaluated $p_i$ for the case of three species,
+$g=3$, and some values of the parameters of the system. For all
+cases considered, $p_i$ has always negative real parts (except
+for homogeneous perturbations, for which one finds neutral
+stability), meaning that any initial inhomogeneous perturbation
+tends to disappear. This agrees with direct simulation results
+of Eq. (\ref{eq:localMF}). Thus, the long-term behavior of the local mean-field approach 
+reduces to the standard homogeneous mean-field
+treatment of Section~\ref{sec:mf}. In contrast, simulation of the
+stochastic model shows domains of the different species for
+short interaction range.
+
+However, the stability strength is not the same for all
+parameter values. Let $M(s)$ be the matrix of time-dependent
+coefficients of the system \eqref{eq:stability}. A necessary,
+but not sufficient, condition for the homogeneous solutions
+$x_i(s)$ to be unstable is that some eigenvalue of $M(s)$ has
+positive real part for some time $s\in[0,T]$  (see a proof of a
+similar result in \cite{klkh20}). During these times, even if
+the trajectory turns out to be linearly stable, its stability
+is reduced and more susceptible to non-infinitesimal
+perturbations or noise. For the case of three species $g=3$,
+and the interaction matrix $H$ given again by Eq.~(\ref{eq:H}), we have seen
+that the matrix $M(s)$ has eigenvalues with positive real
+parts, for some possible periodic trajectories $x_i(s)$,
+provided $F(q) \gtrsim 0.67$. Since the maximum of $F(q)$
+occurs at zero wavenumber and the width of this function
+decreases with increasing $k$, the band of wavenumbers
+identified as `less-stable' shrinks as the interaction range,
+quantified by $k$ increases. This is an indication (although
+not a proof) that homogeneous periodic solutions would be more
+robust for long-range interactions, and instabilities giving
+rise to inhomogeneous configurations are more likely to occur
+for short-range interactions. It is interesting to note that the
+times at which the matrix $M(s)$ has more positive real-part of
+eigenvalues coincide with the times at which some of the
+components of the oscillatory solution $x_i(s)$ approach zero.
+
+
+On general grounds, the local mean-field approximation should
+represent some kind of coarse-graining of the original
+stochastic system, and should be completed by noise terms to
+gain accuracy. Under short-range interactions, appropriate
+noise terms would be able to break the synchronization between
+distant locations, and reproduce the domain structure
+observed in the Monte Carlo simulations. However, we find
+difficult to write analytical expressions for these noise terms
+that would respect all the proper statistical constraints (for
+example: reflect the multiplicative nature of birth-death
+fluctuations, keep in time that $\sum_i \rho_i(\nu,s)=1$,
+etc.). Also, the complexity of such model would not be lower
+than the original individual-based one. Thus, we have not
+developed further this possibility. 
+%{\VC Las referencias se salen de la pagina}
+
+
+\section{\label{sec:app_toymodel} Introducing correlations 
+beyond mean-field}
+
+In section \ref{chp1:2.3} we demonstrated that short-range interactions lead to the emergence of mono-specific clusters, effectively increasing intra-specific competition and 
+stabilizing the dynamics.  As a further way to confirm that the decline of  inter-specific
+competition is able to change the stability of the equilibrium,
+making it stable for sufficiently reduced competition between
+distinct species, we have studied a toy-model which shares
+characteristics with our community model. It is built by
+noticing that $\langle P_{ij} \rangle$ is just the time average
+of the matrix $P_{ij}(s)$ in Eq. (\ref{eq:Ps}).
+A way to correct the mean-field approximation $ P_{ij} \approx
+x_i x_j$ is to introduce some correlations, $ P_{ij} \approx
+c_{ij}x_i x_j$, making some ansatz for $c_{ij}$ and introducing it
+into the exact equation (\ref{eq:xintermsofP}) (with
+$\mean{x_i}\approx x_i$). We have explored the behavior of such
+model in which correlations are implemented by
+$c_{ij}=1-\epsilon$ if $i\neq j$ and $c_{ii}=1+\epsilon'$, with $\epsilon,\epsilon'>0$, 
+resulting in an enhanced intra-specific competition with respect to
+ inter-specific competition as $\epsilon$ and $\epsilon'$ are
+increased. With this choice of $c_{ij}$ the resulting matrix
+$P_{ij}$ does not have the proper statistical properties. In
+particular the model does not respect that $\sum_i x_i=1$,
+$\forall s$. However, this problem can be fixed by
+constraining the dynamics onto the simplex by subtracting to
+Eq. (\ref{eq:xintermsofP}), for each species $i$, the same term
+$g^{-1}\sum_i G_i$, where $G_i$ is the right-hand-side of Eq.
+(\ref{eq:xintermsofP}). It should be clear that this is not a
+systematic approximation to our original system, but a toy
+model useful to check the impact of varying the intra- and inter-specific competition balance. For example, for
+$\epsilon'=0.01$ and the same dominance matrix used in Chapter~\ref{chp:1}, we have found that a Hopf bifurcation occurs at
+$\epsilon = \epsilon_c\approx 0.01975$, so that relative
+species abundances undergo limit cycle oscillations for
+$\epsilon<\epsilon_c$ but the fixed point becomes stable and
+attracting when the inter-specific competition is further
+reduced, $\epsilon>\epsilon_c$. These are the same type of
+states and the same transition that is encountered in our
+stochastic model when decreasing the interaction range.

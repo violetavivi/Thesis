@@ -1,0 +1,69 @@
+\chapter{Some node metrics}\label{chp:methods:predictors}
+Throughout the thesis, several node properties are used to characterize either the behavior of the system (as the average degree in Chapter~\ref{chp:1}) or the entities that nodes represent (as we will see in Chapter~\ref{chp:2}). The list of properties presented here is far from complete in terms of literature, but describes all the tested metrics in Chapter~\ref{chp:2}. The references include their definitions and relevant ecological works in which they appear. 
+\subsubsection{Centrality metrics:}
+\begin{description}
+ \item[Degree:]  It measures how many nodes a node is connected to. 
+   \begin{equation}
+   k_i = \sum_j A_{ij}
+   \end{equation}
+   where $A_{ij} = {0,1}$.  \\
+   References: \cite{Newman2010},\cite{Gouveia2021},\cite{Jordan2008IdentifyingNetworks}  
+   \item[Betweenness centrality:] It measures the extent to which a node lies on paths between other nodes. \\
+   References:    \cite{Newman2010} , \cite{Estrada2007CharacterizationSpecies}, \cite{Gouveia2021}, \cite{Jordan2008IdentifyingNetworks} \item[ Closeness centrality :]  It measures the mean distance
+from a node to other nodes.   \\
+   References:  \cite{Newman2010} ,\cite{Gouveia2021},\cite{Jordan2008IdentifyingNetworks}
+\item[Eigenvector centrality:]  It measures how well-connected a node is to other well-connected nodes. It is the
+leading eigenvector of the adjacency matrix $A$.  \\
+   References:   \cite{Newman2010}, \cite{Allesina2009GooglingCoextinctions} ,\cite{Estrada2007CharacterizationSpecies} 
+
+\item[PageRank:] 
+   PageRank was originally designed as an algorithm for ranking web pages' search results. It is based on the number and quality of the neighbors and is proportional to how often a random walker visits the target node.\\
+   References:   \cite{Langville2006ARetrieval}, \cite{McDonald-Madden2016UsingEcosystems}  
+
+ \end{description}
+ \subsubsection{Meso-scale metrics:}
+ \begin{description}
+     
+\item[ k-core :] It is a set of nodes where each is connected to at least $k$ others.   \\
+   References:  \cite{Newman2010}, \cite{Morone2019TheEcosystems} 
+\item[ Rich Club :] For each node of degree $k$, its rich-club coefficient is the ratio of the number of realized links to the number of potential links with nodes whose degree is greater than $k$. \\
+   Reference:   \cite{McAuley2007Rich-clubHierarchies}  
+\item[Clustering Coefficient  (CC):]  It is the ratio of the number of pairs of neighbors of a node to the total number of pairs of neighbors of that node.    \\
+   References: \cite{Newman2010},\cite{Estrada2007CharacterizationSpecies} 
+\item[ Average neighbor degree  (Avg. Neig. k) :]  
+ It is the average degree of the neighborhood of a node.  \\
+   Reference:  \cite{Barrat2004TheNetworks}  
+   \end{description}
+
+\subsubsection{Signed Metrics:}
+   \begin{description}
+       
+\item[Strength:] 
+It has been observed a positive correlation between strong interaction strengths in a few plant species and an increment in community diversity \cite{melian2009diversity}.
+\begin{equation}
+       \textrm{strength}^{i}_{tot} = \sum_j A_{ij}
+\end{equation}
+ when $A$ is weighted.  \\
+   References: \cite{Jordan2008IdentifyingNetworks},\cite{melian2009diversity}
+\item[ Relative Interaction  Index:]  It measures the dominant interaction sign for each node independently of the size of the network.
+\begin{equation}
+    RII = \frac{k_+ - k_-}{k_+ + k_-} 
+\end{equation}
+\item[ Relative Balance  Index:] It measures the dominance of balanced or unbalanced triads independently of the network size:
+\begin{equation}
+     RBI = \frac{B - U}{B + U},
+\end{equation}
+where $B$ ($U$) is the number of balanced (unbalanced) triads a node participates in. 
+Reference: \cite{harary1955local}
+\item[PN-centrality:] It is a centrality measure for signed networks introduced in \cite{everett2014networks}. Let $n$ be the total number of nodes, $P$ the adjacency matrix of only the positive links of the network, $N$ that of only the negative links, and $A = P-2N$. PN centrality is defined by the expression:
+\begin{equation}
+    PN = \left(I_n - \frac{1}{2n-2}A\right)^{-1} \mathbb{1},
+\end{equation}
+where $\mathbb{1}$ is the vectors of all ones. The implications of this formula are not yet completely understood, but the measure has become standard in the social network literature.
+\item[Generalized PageRank (GPR1):]  AS an alternative to PN centrality, we introduce two signed versions of PageRank. Let $n$,$P$, and $N$ as before, and let $D$ be the diagonal matrix of total degrees (positive plus negative). Now let $A = (P-N)D^{-1}$, and let $\alpha \in (0,1)$ be a damping factor. Our first signed version of PageRank is defined by the formula:
+\begin{equation}
+ GPR_1 = (I_n-\alpha A)^{-1} \mathbb{1},
+\end{equation}
+where $\alpha = 0.85$. The intuitive ideas behind this formula are that the effect of a node $i$ on an adjacent node $j$ is inversely proportional to the total degree of $j$, with the sign of the effect being that of the sign connecting $i$ to $j$. This effect is multiplicative along paths and damped by a factor $\alpha^k$ along paths of length $k$. A truncated version of this measure, considering only paths up to a certain length, was introduced in \cite{liu2020simple}.
+\item[Generalized PageRank (GPR2):] Our second generalization is a variation of the previous GPR1 where now $D$ is the diagonal matrix of the absolute difference between the positive and negative degree of nodes. In that way, nodes with a large difference between positive and negative links are more penalized.
+\end{description}
